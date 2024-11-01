@@ -22,7 +22,7 @@ local ismyautoparryspamming
 local local_player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local standalone = false
-print("Modules By Synthia")
+print("Z Scripts Loading...🔃")
 
 local originalParryRemote
 local originalResolveParryRemote 
@@ -1237,7 +1237,126 @@ tp_hit = state
 visualize_Enabled = state
 	end,
 })										
-				
+	
+  
+  
+  
+
+local Player = Window:AddTab({
+	Title = "Player",
+	Section = "Player",
+	Icon = "rbxassetid://11963373994"
+})
+
+-- FPS Booster Ekstrem dengan Toggle
+
+local isFPSBoosterEnabled = false  -- Status awal FPS booster
+
+local function enableFPSBooster()
+    -- Mengatur kualitas grafis ke tingkat terendah
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+    -- Menghapus objek visual berlebihan di Workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = false  -- Nonaktifkan semua efek partikel
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            obj:Destroy()  -- Hapus semua tekstur dan decal
+        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
+            obj.Transparency = 1  -- Sembunyikan objek berumput atau berdaun
+        end
+    end
+
+    -- Pengaturan pencahayaan ekstrem untuk meningkatkan FPS
+    local Lighting = game:GetService("Lighting")
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 0  -- Atur kecerahan serendah mungkin
+    Lighting.ClockTime = 12  -- Mengatur waktu ke siang hari
+    Lighting.FogEnd = 9e9  -- Menghapus efek kabut
+    Lighting.EnvironmentDiffuseScale = 0
+    Lighting.EnvironmentSpecularScale = 0
+    Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)  -- Mengurangi kontras untuk performa
+
+    -- Menghapus aksesori dan kosmetik dari karakter pemain
+    local player = game.Players.LocalPlayer
+    player.CharacterAdded:Connect(function(character)
+        for _, accessory in pairs(character:GetChildren()) do
+            if accessory:IsA("Accessory") or accessory:IsA("Clothing") or accessory:IsA("ShirtGraphic") then
+                accessory:Destroy()  -- Hapus semua aksesori dan pakaian
+            end
+        end
+    end)
+end
+
+local function disableFPSBooster()
+    -- Mengembalikan kualitas grafis ke otomatis
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+
+    -- Mengaktifkan kembali efek visual dan detail di Workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = true  -- Aktifkan semua efek partikel kembali
+        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
+            obj.Transparency = 0  -- Tampilkan objek berumput atau berdaun kembali
+        end
+    end
+
+    -- Mengembalikan pengaturan pencahayaan ke default
+    local Lighting = game:GetService("Lighting")
+    Lighting.GlobalShadows = true
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 1000
+    Lighting.EnvironmentDiffuseScale = 1
+    Lighting.EnvironmentSpecularScale = 1
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)  -- Mengembalikan warna normal
+
+    -- Mengembalikan pakaian dan aksesori (jika script pengembalian tersedia)
+end
+
+-- Toggle untuk FPS Booster
+Window:AddToggle({
+    Title = "FPS Booster",
+    Description = "Reduce Quality game(not remove sword effect)",
+    Tab = Player,  -- Gantilah dengan tab yang sesuai
+    Callback = function(state)
+        isFPSBoosterEnabled = state
+        if isFPSBoosterEnabled then
+            enableFPSBooster()
+        else
+            disableFPSBooster()
+        end
+    end,
+})
+
+-- Membuat slider untuk mengatur WalkSpeed
+
+Window:AddSlider({
+    Title = "WalkSpeed",
+    Description = "Set the WalkSpeed of your character (default: 16)",
+    Tab = Player,  -- Gantilah dengan nama tab yang sesuai
+    AllowDecimals = false,  -- WalkSpeed biasanya berupa integer
+    MaxValue = 100,  -- Atur batas maksimum sesuai kebutuhan
+    MinValue = 0,    -- Atur batas minimum
+    DefaultValue = 16,  -- Nilai default WalkSpeed
+    Callback = function(Amount) 
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.WalkSpeed = Amount  -- Set WalkSpeed sesuai dengan nilai slider
+        end
+
+        -- Simpan pengaturan WalkSpeed jika perlu
+        Window:SetSetting("WalkSpeed", Amount)
+    end,
+})
+
+
+
 --// Tab [SETTINGS]
 local Keybind = nil
 local Settings = Window:AddTab({
