@@ -1355,6 +1355,64 @@ Window:AddSlider({
     end,
 })
 
+-- Variabel kontrol untuk chams
+local isChamsEnabled = false
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local chamColor = Color3.fromRGB(0, 255, 0)  -- Warna hijau
+local chamTransparency = 0.5
+
+-- Fungsi untuk menambahkan atau menghapus Chams
+local function toggleChams(enable)
+    isChamsEnabled = enable
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            for _, part in ipairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    if enable then
+                        -- Menambahkan Chams
+                        if not part:FindFirstChild("Chams") then
+                            local chams = Instance.new("BoxHandleAdornment")
+                            chams.Name = "Chams"
+                            chams.Adornee = part
+                            chams.Color3 = chamColor
+                            chams.Transparency = chamTransparency
+                            chams.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
+                            chams.ZIndex = 10
+                            chams.AlwaysOnTop = true
+                            chams.Parent = part
+                        end
+                    else
+                        -- Menghapus Chams
+                        local chams = part:FindFirstChild("Chams")
+                        if chams then
+                            chams:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Tambahkan Toggle ke Window
+Window:AddToggle({
+    Title = "Player Chams",
+    Description = "AWill Chams All Player",
+    Tab = Player,
+    Callback = function(state)
+        toggleChams(state) -- Aktifkan atau nonaktifkan chams berdasarkan status toggle
+    end,
+})
+
+-- Menambahkan event untuk pemain yang baru bergabung
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if isChamsEnabled then
+            toggleChams(true) -- Tambahkan chams jika toggle dalam keadaan aktif
+        end
+    end)
+end)
 
 
 --// Tab [SETTINGS]
