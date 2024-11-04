@@ -1514,5 +1514,3 @@ print("Loading Succesful!")
 
 --Execute Checker  
 loadstring(game:HttpGet("https://raw.githubusercontent.com/StarX-exploit/executed/refs/heads/main/exe.lua"))()
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/StarX-exploit/murder-ui/refs/heads/main/ui-star"))()
