@@ -1137,7 +1137,7 @@ Window:AddSection({ Name = "Autoparry", Tab = Main })
 
 Window:AddToggle({
 	Title = "Autoparry",
-	Description = "Parrys the ball [100% accuracy]",
+	Description = "Yall Crazy, We Got 3k Executed Omg",
 	Tab = Main,
 	Callback = function(state)
 	aura_Enabled = state
