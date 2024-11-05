@@ -22,7 +22,9 @@ local ismyautoparryspamming
 local local_player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local standalone = false
-print("Z Scripts Loading...🔃")
+print("[🔃]: Z Scripts Loading...")
+
+--//OPTIONS
 
 local originalParryRemote
 local originalResolveParryRemote 
@@ -30,17 +32,32 @@ local aivar, visualizervar, autospamvar, autoparryvar, tphitvar, autowinvar
 local nurysium_Data = nil
 local hit_Sound = nil
 local closest_Entity = nil
+local parry_remote = nil
 local aura_Enabled = false
 local auto_curve = false
+local hit_sound_Enabled = false
 local auto_spam = false
 local training_mode = false
+local hit_effect_Enabled = false
 local anti_curve_spam_Enabled = false
 local visualize_Enabled = false
 local ai_Enabled = false
 local auto_win = false
 local tp_hit = false
+local night_mode_Enabled = false
+local spectate_Enabled = false
+local trail_Enabled = false
 local potanum = 15
 local Services = {game:GetService("AdService"),game:GetService("SocialService")}
+
+function initializate(dataFolder_name: string)
+    local nurysium_Data = Instance.new('Folder', game:GetService('CoreGui'))
+    nurysium_Data.Name = dataFolder_name
+
+    hit_Sound = Instance.new('Sound', nurysium_Data)
+    hit_Sound.SoundId = 'rbxassetid://6607204501'
+    hit_Sound.Volume = 6
+end
 
 local function get_closest_entity(Object)
 	task.spawn(function()
@@ -978,6 +995,204 @@ RunService.Heartbeat:Connect(function()
     manageConnection(auto_win, "autowinvar", "Heartbeat")
     manageConnection(ai_Enabled, "aivar", "RenderStepped")
 end)
+
+--//night mode, trail, Spectate Scripts here
+
+--//Night Mode
+task.defer(function()
+    while task.wait(1) do
+        if night_mode_Enabled then
+            TweenService:Create(game:GetService("Lighting"), TweenInfo.new(3), {ClockTime = 1.9}):Play()
+        else
+            TweenService:Create(game:GetService("Lighting"), TweenInfo.new(3), {ClockTime = 13.5}):Play()
+        end
+    end
+end)
+
+--//Trail 
+task.defer(function()
+    game:GetService("RunService").Heartbeat:Connect(function()
+
+        if not local_player.Character then
+            return
+        end
+
+        if trail_Enabled then
+            local trail = game:GetObjects("rbxassetid://17483658369")[1]
+
+            trail.Name = 'nurysium_fx'
+
+            if local_player.Character.PrimaryPart:FindFirstChild('nurysium_fx') then
+                return
+            end
+
+            local Attachment0 = Instance.new("Attachment", local_player.Character.PrimaryPart)
+            local Attachment1 = Instance.new("Attachment", local_player.Character.PrimaryPart)
+
+            Attachment0.Position = Vector3.new(0, -2.411, 0)
+            Attachment1.Position = Vector3.new(0, 2.504, 0)
+
+            trail.Parent = local_player.Character.PrimaryPart
+            trail.Attachment0 = Attachment0
+            trail.Attachment1 = Attachment1
+        else
+
+            if local_player.Character.PrimaryPart:FindFirstChild('nurysium_fx') then
+                local_player.Character.PrimaryPart['nurysium_fx']:Destroy()
+            end
+        end
+
+    end)
+end)
+
+--//Spectate 
+task.defer(function()
+    RunService.RenderStepped:Connect(function()
+        if spectate_Enabled then
+
+            local self = Nurysium_Util.getBall()
+
+            if not self then
+                return
+            end
+
+            workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(workspace.CurrentCamera.CFrame.Position, self.Position), 1.5)
+        end
+    end)
+end)
+
+local isFPSBoosterEnabled = false  -- Status awal FPS booster
+
+local function enableFPSBooster()
+    -- Mengatur kualitas grafis ke tingkat terendah
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+    -- Menghapus objek visual berlebihan di Workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = false  -- Nonaktifkan semua efek partikel
+        elseif obj:IsA("Decal") or obj:IsA("Texture") then
+            obj:Destroy()  -- Hapus semua tekstur dan decal
+        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
+            obj.Transparency = 1  -- Sembunyikan objek berumput atau berdaun
+        end
+    end
+
+    -- Pengaturan pencahayaan ekstrem untuk meningkatkan FPS
+    local Lighting = game:GetService("Lighting")
+    Lighting.GlobalShadows = false
+    Lighting.Brightness = 0  -- Atur kecerahan serendah mungkin
+    Lighting.ClockTime = 12  -- Mengatur waktu ke siang hari
+    Lighting.FogEnd = 9e9  -- Menghapus efek kabut
+    Lighting.EnvironmentDiffuseScale = 0
+    Lighting.EnvironmentSpecularScale = 0
+    Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)  -- Mengurangi kontras untuk performa
+
+    -- Menghapus aksesori dan kosmetik dari karakter pemain
+    local player = game.Players.LocalPlayer
+    player.CharacterAdded:Connect(function(character)
+        for _, accessory in pairs(character:GetChildren()) do
+            if accessory:IsA("Accessory") or accessory:IsA("Clothing") or accessory:IsA("ShirtGraphic") then
+                accessory:Destroy()  -- Hapus semua aksesori dan pakaian
+            end
+        end
+    end)
+end
+
+local function disableFPSBooster()
+    -- Mengembalikan kualitas grafis ke otomatis
+    settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+
+    -- Mengaktifkan kembali efek visual dan detail di Workspace
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+            obj.Enabled = true  -- Aktifkan semua efek partikel kembali
+        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
+            obj.Transparency = 0  -- Tampilkan objek berumput atau berdaun kembali
+        end
+    end
+
+    -- Mengembalikan pengaturan pencahayaan ke default
+    local Lighting = game:GetService("Lighting")
+    Lighting.GlobalShadows = true
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 1000
+    Lighting.EnvironmentDiffuseScale = 1
+    Lighting.EnvironmentSpecularScale = 1
+    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)  -- Mengembalikan warna normal
+
+    -- Mengembalikan pakaian dan aksesori (jika script pengembalian tersedia)
+end
+
+-- Variabel kontrol untuk chams
+local isChamsEnabled = false
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local chamColor = Color3.fromRGB(0, 255, 0)  -- Warna hijau
+local chamTransparency = 0.5
+
+-- Fungsi untuk menambahkan atau menghapus Chams
+local function toggleChams(enable)
+    isChamsEnabled = enable
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            for _, part in ipairs(player.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    if enable then
+                        -- Menambahkan Chams
+                        if not part:FindFirstChild("Chams") then
+                            local chams = Instance.new("BoxHandleAdornment")
+                            chams.Name = "Chams"
+                            chams.Adornee = part
+                            chams.Color3 = chamColor
+                            chams.Transparency = chamTransparency
+                            chams.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
+                            chams.ZIndex = 10
+                            chams.AlwaysOnTop = true
+                            chams.Parent = part
+                        end
+                    else
+                        -- Menghapus Chams
+                        local chams = part:FindFirstChild("Chams")
+                        if chams then
+                            chams:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- Menambahkan event untuk pemain yang baru bergabung
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        if isChamsEnabled then
+            toggleChams(true) -- Tambahkan chams jika toggle dalam keadaan aktif
+        end
+    end)
+end)
+
+
+ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect(function()
+    if hit_sound_Enabled then
+        hit_Sound:Play()
+    end
+
+    if hit_effect_Enabled then
+        local hit_effect = game:GetObjects("rbxassetid://17407244385")[1]
+
+        hit_effect.Parent = Nurysium_Util.getBall()
+        hit_effect:Emit(3)
+
+        task.delay(5, function()
+            hit_effect:Destroy()
+        end)
+
+    end
+end)
+
 --[[ to prevent mishaps this linebof code of the ui starts here]]--
 				
 
@@ -987,7 +1202,7 @@ local UserInputService = game:GetService("UserInputService");
 --// Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/lxte/lates-lib/main/Main.lua"))()
 local Window = Library:CreateWindow({
-	Title = "Z Scripts - ",
+	Title = "Star X - ",
 	Theme = "Dark",
 	
 	Size = UDim2.fromOffset(570, 370),
@@ -1072,7 +1287,7 @@ Window:AddTabSection({
 
 local AAA = Window:AddTab({
 	Title = "Info",
-	Section = "Z Scripts",
+	Section = "Star X",
 	Icon = "rbxassetid://11963373994"
 })
 
@@ -1080,14 +1295,14 @@ Window:AddSection({ Name = "Information", Tab = AAA })
 
 
 Window:AddParagraph({
-	Title = "Z Scripts",
-	Description = "Best BLADE BALL Scripts",
+	Title = "Star X",
+	Description = "People Call It Star X, So We use Star X Name",
 	Tab = AAA
 })
 				
 	Window:AddParagraph({
 	Title = "Owner",
-	Description = "CodeE4X, Fade & Akira Give This Script For Me",
+	Description = "CodeE4X, Fade & Akira Give This Script For Me(W Akira)",
 	Tab = AAA
 })		
 
@@ -1125,7 +1340,17 @@ Window:AddToggle({
 		end
 	end,
 }) 
-				
+
+Window:AddSection({ Name = "Updates", Tab = AAA }) 
+
+Window:AddParagraph({
+	Title = "Star X V1.001",
+	Description = "Add Player Trails, Spectate, Night mode, Hit Sounds, Hit Effect.",
+	Tab = AAA
+})
+			
+
+
 local Main = Window:AddTab({
 	Title = "Main",
 	Section = "Main",
@@ -1137,7 +1362,7 @@ Window:AddSection({ Name = "Autoparry", Tab = Main })
 
 Window:AddToggle({
 	Title = "Autoparry",
-	Description = "Yall Crazy, We Got 3k Executed Omg",
+	Description = "Parrys the ball [100% accuracy]",
 	Tab = Main,
 	Callback = function(state)
 	aura_Enabled = state
@@ -1185,7 +1410,7 @@ Window:AddSection({ Name = "Parry Misc", Tab = Main })
 	Description = "When spamming it cancels out the Curve",
 	Tab = Main,
 	Callback = function(state)
-anti_curve_spam_Enabled = state
+      anti_curve_spam_Enabled = state
 	end,
 })				
 	Window:AddToggle({
@@ -1197,11 +1422,11 @@ standalone = state
 	end,
 })			
 
-				Window:AddSection({ Name = "Autofarms", Tab = Main }) 
+Window:AddSection({ Name = "Autofarms", Tab = Main }) 
 	
 Window:AddToggle({
 	Title = "Autofarm",
-	Description = "Autofarms the game not 100% win rate",
+	Description = "Autofarms the game not 100% win rate(your own risk)",
 	Tab = Main,
 	Callback = function(state)
 auto_win = state
@@ -1227,114 +1452,103 @@ tp_hit = state
 })												
 				
 				
-				Window:AddSection({ Name = "Debug", Tab = Main }) 
+Window:AddSection({ Name = "Debug", Tab = Main }) 
 	
-				Window:AddToggle({
+Window:AddToggle({
 	Title = "View Parry Part",
 	Description = "Shows the parry range",
 	Tab = Main,
 	Callback = function(state)
 visualize_Enabled = state
 	end,
-})										
-	
-  
-  
-  
-
-local Player = Window:AddTab({
-	Title = "Player",
-	Section = "Player",
-	Icon = "rbxassetid://11963373994"
 })
 
--- FPS Booster Ekstrem dengan Toggle
-
-local isFPSBoosterEnabled = false  -- Status awal FPS booster
-
-local function enableFPSBooster()
-    -- Mengatur kualitas grafis ke tingkat terendah
-    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-
-    -- Menghapus objek visual berlebihan di Workspace
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
-            obj.Enabled = false  -- Nonaktifkan semua efek partikel
-        elseif obj:IsA("Decal") or obj:IsA("Texture") then
-            obj:Destroy()  -- Hapus semua tekstur dan decal
-        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
-            obj.Transparency = 1  -- Sembunyikan objek berumput atau berdaun
-        end
-    end
-
-    -- Pengaturan pencahayaan ekstrem untuk meningkatkan FPS
-    local Lighting = game:GetService("Lighting")
-    Lighting.GlobalShadows = false
-    Lighting.Brightness = 0  -- Atur kecerahan serendah mungkin
-    Lighting.ClockTime = 12  -- Mengatur waktu ke siang hari
-    Lighting.FogEnd = 9e9  -- Menghapus efek kabut
-    Lighting.EnvironmentDiffuseScale = 0
-    Lighting.EnvironmentSpecularScale = 0
-    Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)  -- Mengurangi kontras untuk performa
-
-    -- Menghapus aksesori dan kosmetik dari karakter pemain
-    local player = game.Players.LocalPlayer
-    player.CharacterAdded:Connect(function(character)
-        for _, accessory in pairs(character:GetChildren()) do
-            if accessory:IsA("Accessory") or accessory:IsA("Clothing") or accessory:IsA("ShirtGraphic") then
-                accessory:Destroy()  -- Hapus semua aksesori dan pakaian
-            end
-        end
-    end)
-end
-
-local function disableFPSBooster()
-    -- Mengembalikan kualitas grafis ke otomatis
-    settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-
-    -- Mengaktifkan kembali efek visual dan detail di Workspace
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
-            obj.Enabled = true  -- Aktifkan semua efek partikel kembali
-        elseif obj:IsA("BasePart") and (obj.Material == Enum.Material.Grass or obj.Material == Enum.Material.LeafyGrass) then
-            obj.Transparency = 0  -- Tampilkan objek berumput atau berdaun kembali
-        end
-    end
-
-    -- Mengembalikan pengaturan pencahayaan ke default
-    local Lighting = game:GetService("Lighting")
-    Lighting.GlobalShadows = true
-    Lighting.Brightness = 2
-    Lighting.ClockTime = 14
-    Lighting.FogEnd = 1000
-    Lighting.EnvironmentDiffuseScale = 1
-    Lighting.EnvironmentSpecularScale = 1
-    Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)  -- Mengembalikan warna normal
-
-    -- Mengembalikan pakaian dan aksesori (jika script pengembalian tersedia)
-end
-
--- Toggle untuk FPS Booster
 Window:AddToggle({
-    Title = "FPS Booster",
-    Description = "Reduce Quality game(not remove sword effect)",
-    Tab = Player,  -- Gantilah dengan tab yang sesuai
+	Title = "View Console",
+	Description = "See Console History",
+	Tab = Main,
+	Callback = function()
+        game.StarterGui:SetCore("DevConsoleVisible", true)
+        wait()
+	end,
+})
+
+
+local Visual = Window:AddTab({
+	Title = "Visual",
+	Section = "Visual",
+	Icon = "rbxassetid://11963373994"
+})
+--//Spectate Ball 			
+Window:AddToggle({
+Title = "Spectate Ball",
+Description = "Lock your Camera To Ball",
+Tab = Visual,
+Callback = function(toggled)
+    spectate_Enabled = toggled
+end,
+})	
+
+Window:AddToggle({
+    Title = "Player Chams",
+    Description = "Will Chams All Player",
+    Tab = Visual,
     Callback = function(state)
-        isFPSBoosterEnabled = state
-        if isFPSBoosterEnabled then
-            enableFPSBooster()
-        else
-            disableFPSBooster()
-        end
+        toggleChams(state) -- Aktifkan atau nonaktifkan chams berdasarkan status toggle
     end,
 })
 
--- Membuat slider untuk mengatur WalkSpeed
+
+--//Night Mode 
+Window:AddToggle({
+    Title = "Night Mode",
+    Description = "Game Become Night Mode",
+    Tab = Visual,  -- Gantilah dengan tab yang sesuai
+    Callback = function(toggled)
+        night_mode_Enabled = toggled
+    end,
+})
+
+Window:AddToggle({
+    Title = "Player Trail",
+    Description = "Give you A Trail",
+    Tab = Visual,
+    Callback = function(toggled)
+        trail_Enabled = toggled
+    end,
+})
+
+Window:AddSection({ Name = "Hit Misc", Tab = Visual }) 
+
+Window:AddToggle({
+    Title = "Hit Sounds",
+    Description = "When You Hit The Ball",
+    Tab = Visual,
+    Callback = function(toggled)
+        hit_sound_Enabled = toggled
+    end,
+})
+
+Window:AddToggle({
+    Title = "Hit Effect",
+    Description = "When You Hit The Ball",
+    Tab = Visual,
+    Callback = function(toggled)
+        hit_effect_Enabled = toggled
+    end,
+})
+
+local Misc = Window:AddTab({
+	Title = "Misc",
+	Section = "Misc",
+	Icon = "rbxassetid://11963373994"
+})
+
 
 Window:AddSlider({
     Title = "WalkSpeed",
     Description = "Set the WalkSpeed of your character (default: 16)",
-    Tab = Player,  -- Gantilah dengan nama tab yang sesuai
+    Tab = Misc,  -- Gantilah dengan nama tab yang sesuai
     AllowDecimals = false,  -- WalkSpeed biasanya berupa integer
     MaxValue = 100,  -- Atur batas maksimum sesuai kebutuhan
     MinValue = 0,    -- Atur batas minimum
@@ -1355,64 +1569,20 @@ Window:AddSlider({
     end,
 })
 
--- Variabel kontrol untuk chams
-local isChamsEnabled = false
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local chamColor = Color3.fromRGB(0, 255, 0)  -- Warna hijau
-local chamTransparency = 0.5
-
--- Fungsi untuk menambahkan atau menghapus Chams
-local function toggleChams(enable)
-    isChamsEnabled = enable
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            for _, part in ipairs(player.Character:GetChildren()) do
-                if part:IsA("BasePart") then
-                    if enable then
-                        -- Menambahkan Chams
-                        if not part:FindFirstChild("Chams") then
-                            local chams = Instance.new("BoxHandleAdornment")
-                            chams.Name = "Chams"
-                            chams.Adornee = part
-                            chams.Color3 = chamColor
-                            chams.Transparency = chamTransparency
-                            chams.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
-                            chams.ZIndex = 10
-                            chams.AlwaysOnTop = true
-                            chams.Parent = part
-                        end
-                    else
-                        -- Menghapus Chams
-                        local chams = part:FindFirstChild("Chams")
-                        if chams then
-                            chams:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-
--- Tambahkan Toggle ke Window
 Window:AddToggle({
-    Title = "Player Chams",
-    Description = "AWill Chams All Player",
-    Tab = Player,
+    Title = "FPS Booster",
+    Description = "Reduce Quality game(not remove sword effect)",
+    Tab = Misc,  -- Gantilah dengan tab yang sesuai
     Callback = function(state)
-        toggleChams(state) -- Aktifkan atau nonaktifkan chams berdasarkan status toggle
+        isFPSBoosterEnabled = state
+        if isFPSBoosterEnabled then
+            enableFPSBooster()
+        else
+            disableFPSBooster()
+        end
     end,
 })
 
--- Menambahkan event untuk pemain yang baru bergabung
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        if isChamsEnabled then
-            toggleChams(true) -- Tambahkan chams jika toggle dalam keadaan aktif
-        end
-    end)
-end)
 
 
 --// Tab [SETTINGS]
@@ -1461,7 +1631,7 @@ Window:AddSlider({
 }) 
 
 Window:Notify({
-	Title = "Please Join Fade New Server: https://discord.com/invite/EwARkGncq4",
+	Title = "Please Join Star X Server: https://discord.com/invite/EwARkGncq4",
 	Description = "Press Left Alt or The Image To Minimize The Window.", 
 	Duration = 10
 })
@@ -1500,7 +1670,7 @@ ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.120833337, 0, 0.0952890813, 0)
 ImageButton.Size = UDim2.new(0, 50, 0, 50)
-ImageButton.Image = "rbxassetid://15302652530" -- Set the image using the decal ID
+ImageButton.Image = "rbxassetid://5430597569" -- Set the image using the decal ID
 ImageButton.Draggable = true
 
 -- Add UICorner for rounded corners
@@ -1510,7 +1680,8 @@ UICorner.Parent = ImageButton
 ImageButton.MouseButton1Click:Connect(function()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftAlt, false, game)
 end)
-print("Loading Succesful!")
+print("[🟢]: Loading Succesful!")
 
 --Execute Checker  
 loadstring(game:HttpGet("https://raw.githubusercontent.com/StarX-exploit/executed/refs/heads/main/exe.lua"))()
+
