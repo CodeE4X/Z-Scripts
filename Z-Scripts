@@ -21,7 +21,7 @@ local ismyautoparryspamming
 local local_player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local standalone = false
-print("[🔃]: Z Scripts Loading...")
+print("[🔃]: Star X Loading...")
 
 --//OPTIONS
 
@@ -1301,12 +1301,29 @@ Window:AddParagraph({
 				
 	Window:AddParagraph({
 	Title = "Owner",
-	Description = "CodeE4X, Fade & Akira Give This Script For Me(W Akira)",
+	Description = "CodeE4X, Fade & Akira Give This Script For Me(W Akira)Fuck Yall Think This Scripts Is Stealer",
 	Tab = AAA
-})		
+})	
 
-Window:AddToggle({
-	Title = "Copy Discord Link!",
+Window:AddSection({ Name = "Updates", Tab = AAA }) 
+
+Window:AddParagraph({
+	Title = "Star X V1.111",
+	Description = "Youtuber Credits",
+	Tab = AAA
+})
+
+Window:AddButton({
+	Title = "Kira(Old Owner Showcase My Scripts:) )",
+	Description = "https://www.youtube.com/@KiraUploads",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@KiraUploads")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Copy Discord Link!(clik to copy)",
 	Description = "https://discord.gg/EwARkGncq4",
 	Tab = AAA,
 	Callback = function()
@@ -1314,8 +1331,8 @@ Window:AddToggle({
 	end,
 }) 
 
-Window:AddToggle({
-	Title = "Copy Youtube Link!",
+Window:AddButton({
+	Title = "Copy Youtube Link!(clik to copy)",
 	Description = "https://youtube.com/@starx575",
 	Tab = AAA,
 	Callback = function()
@@ -1328,8 +1345,8 @@ local TeleportService = game:GetService("TeleportService")
 
 local placeId = 121501154939356
 
-Window:AddToggle({
-	Title = "Donate Our Teams!!",
+Window:AddButton({
+	Title = "Donate Our Teams!!(clik to teleport)",
 	Description = "Support Owner By Joining And Donating!",
 	Tab = AAA,
 	Callback = function()
@@ -1340,15 +1357,90 @@ Window:AddToggle({
 	end,
 }) 
 
-Window:AddSection({ Name = "Updates", Tab = AAA }) 
+local Star = Window:AddTab({
+	Title = "Star User",
+	Section = "First User",
+	Icon = "rbxassetid://11963373994"
+})
+
+Window:AddSection({ Name = "First User", Tab = Star }) 
 
 Window:AddParagraph({
-	Title = "Star X V1.001",
-	Description = "Add Player Trails, Spectate, Night mode, Hit Sounds, Hit Effect.",
-	Tab = AAA
-})
-			
+	Title = "First User",
+	Description = "eeaway : 1198579785",
+	Tab = Star
+}) 
 
+Window:AddSection({ Name = "Showcaser(clik to copy)", Tab = Star }) 
+
+Window:AddButton({
+	Title = "Clxty.",
+	Description = "https://www.youtube.com/@Clxty.",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@Clxty.")
+	end,
+}) 
+	
+Window:AddButton({
+	Title = "T4Dripz",
+	Description = "https://www.youtube.com/@T4Dripz",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@T4Dripz")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Prymoric V2",
+	Description = "https://www.youtube.com/@Prymoricv2",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@Prymoricv2")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Ley D Murphy",
+	Description = "https://www.youtube.com/@Leydmurphyy",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@Leydmurphyy")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Kazu",
+	Description = "https://www.youtube.com/@kazurbx",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@kazurbx")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "R4mpage",
+	Description = "https://www.youtube.com/@GetScriptFromRampage",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@GetScriptFromRampage")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Dat Mod",
+	Description = "https://www.youtube.com/@datmodd",
+	Tab = Star,
+	Callback = function()
+		setclipboard("https://www.youtube.com/@datmodd")
+	end,
+}) 
+
+Window:AddParagraph({
+	Title = "Infos",
+	Description = "Sorry If Im Not Showed your Yt, Tell Me In Discord!",
+	Tab = Star
+})	
 
 local Main = Window:AddTab({
 	Title = "Main",
@@ -1462,15 +1554,6 @@ visualize_Enabled = state
 	end,
 })
 
-Window:AddToggle({
-	Title = "View Console",
-	Description = "See Console History",
-	Tab = Main,
-	Callback = function()
-        game.StarterGui:SetCore("DevConsoleVisible", true)
-        wait()
-	end,
-})
 
 
 local Visual = Window:AddTab({
@@ -1517,25 +1600,6 @@ Window:AddToggle({
     end,
 })
 
-Window:AddSection({ Name = "Hit Misc", Tab = Visual }) 
-
-Window:AddToggle({
-    Title = "Hit Sounds",
-    Description = "When You Hit The Ball",
-    Tab = Visual,
-    Callback = function(toggled)
-        hit_sound_Enabled = toggled
-    end,
-})
-
-Window:AddToggle({
-    Title = "Hit Effect",
-    Description = "When You Hit The Ball",
-    Tab = Visual,
-    Callback = function(toggled)
-        hit_effect_Enabled = toggled
-    end,
-})
 
 local Misc = Window:AddTab({
 	Title = "Misc",
