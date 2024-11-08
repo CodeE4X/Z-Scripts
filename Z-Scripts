@@ -1436,6 +1436,42 @@ Window:AddButton({
 	end,
 }) 
 
+Window:AddButton({
+	Title = "Robloxscriptshowcaser",
+	Description = "https://www.youtube.com/@robloxscriptshowcaser-i9x",
+	Tab = Star,
+	Callback = function()
+	    setclipboard("https://www.youtube.com/@robloxscriptshowcaser-i9x")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "ScriptHack",
+	Description = "https://www.youtube.com/@RobloxHorrorscript",
+	Tab = Star,
+	Callback = function()
+	    setclipboard("https://www.youtube.com/@RobloxHorrorscript")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "Jacool",
+	Description = "https://www.youtube.com/@jacool123scirps",
+	Tab = Star,
+	Callback = function()
+	    setclipboard("https://www.youtube.com/@jacool123scirps")
+	end,
+}) 
+
+Window:AddButton({
+	Title = "6969Player",
+	Description = "https://www.youtube.com/@baconneedshair3",
+	Tab = Star,
+	Callback = function()
+	    setclipboard("https://www.youtube.com/@baconneedshair3")
+	end,
+}) 
+
 Window:AddParagraph({
 	Title = "Infos",
 	Description = "Sorry If Im Not Showed your Yt, Tell Me In Discord!",
