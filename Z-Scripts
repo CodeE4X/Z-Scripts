@@ -29,7 +29,7 @@ Title.TextSize = 20
 
 -- Description Properties
 Description.Parent = Frame
-Description.Text = "The Key Is Permanent,The key will change every 5 days or so"
+Description.Text = "The Key Is Permanent,The key will change every 5 days or so....Bypass Link = Ban From Scripts"
 Description.TextColor3 = Color3.fromRGB(200, 200, 200)
 Description.Size = UDim2.new(1, -20, 0, 50)
 Description.Position = UDim2.new(0, 10, 0, 35)
@@ -71,7 +71,7 @@ GetKeyButton.TextSize = 16
 
 -- Fungsi untuk menyalin URL dan notifikasi
 GetKeyButton.MouseButton1Click:Connect(function()
-    local keyUrl = "https://codee4x.github.io/getkey/"  -- Ganti dengan URL key yang sebenarnya
+    local keyUrl = "https://codee4x.github.io/get-key/"  -- Ganti dengan URL key yang sebenarnya
     if setclipboard then
         setclipboard(keyUrl)
         -- Menampilkan notifikasi bahwa URL telah disalin
