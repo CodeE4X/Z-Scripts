@@ -71,7 +71,7 @@ GetKeyButton.TextSize = 16
 
 -- Fungsi untuk menyalin URL dan notifikasi
 GetKeyButton.MouseButton1Click:Connect(function()
-    local keyUrl = "https://direct-link.net/1236271/thsi-jusaduw"  -- Ganti dengan URL key yang sebenarnya
+    local keyUrl = "https://link-target.net/1236271/star-x-key-system1"  -- Ganti dengan URL key yang sebenarnya
     if setclipboard then
         setclipboard(keyUrl)
         -- Menampilkan notifikasi bahwa URL telah disalin
