@@ -29,7 +29,7 @@ Title.TextSize = 20
 
 -- Description Properties
 Description.Parent = Frame
-Description.Text = "The Key Is Permanent,The key will change every 5 days or so"
+Description.Text = "If The Key Not Work, Get Key Again"
 Description.TextColor3 = Color3.fromRGB(200, 200, 200)
 Description.Size = UDim2.new(1, -20, 0, 50)
 Description.Position = UDim2.new(0, 10, 0, 35)
