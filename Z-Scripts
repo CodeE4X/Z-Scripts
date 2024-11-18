@@ -1,3 +1,14 @@
+local KeyGuardLibrary = loadstring(game:HttpGet("https://cdn.keyguardian.org/library/v1.0.0.lua"))()
+local trueData = "73eee7ee0ec94c788c324838db4c88c8"
+local falseData = "15603359f50d4bef855ca5fef00684e9"
+
+KeyGuardLibrary.Set({
+  publicToken = "5b7a792577754dbcbaa87f5cc7944262",
+  privateToken = "abf09ec810524e0794c71c291a926ce0",
+  trueData = trueData,
+  falseData = falseData,
+})
+
 -- GUI Key System
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
@@ -6,6 +17,7 @@ local Description = Instance.new("TextLabel")
 local KeyInput = Instance.new("TextBox")
 local VerifyButton = Instance.new("TextButton")
 local GetKeyButton = Instance.new("TextButton")
+local JoinDiscordButton = Instance.new("TextButton") -- Tambahkan tombol Join Discord
 
 -- ScreenGui Properties
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -14,8 +26,8 @@ ScreenGui.Name = "KeySystemGUI"
 -- Frame Properties
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.Size = UDim2.new(0, 300, 0, 200)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+Frame.Size = UDim2.new(0, 300, 0, 230) -- Sesuaikan ukuran untuk tombol tambahan
+Frame.Position = UDim2.new(0.5, -150, 0.5, -115)
 Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 
 -- Title Properties
@@ -29,7 +41,7 @@ Title.TextSize = 20
 
 -- Description Properties
 Description.Parent = Frame
-Description.Text = "If The Key Not Work, Get Key Again"
+Description.Text = "Have Problem With Key? Join Our Discord!"
 Description.TextColor3 = Color3.fromRGB(200, 200, 200)
 Description.Size = UDim2.new(1, -20, 0, 50)
 Description.Position = UDim2.new(0, 10, 0, 35)
@@ -69,45 +81,60 @@ GetKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 GetKeyButton.Font = Enum.Font.SourceSans
 GetKeyButton.TextSize = 16
 
--- Fungsi untuk menyalin URL dan notifikasi
+-- JoinDiscordButton Properties
+JoinDiscordButton.Parent = Frame
+JoinDiscordButton.Text = "Join Discord"
+JoinDiscordButton.Size = UDim2.new(1, -20, 0, 30)
+JoinDiscordButton.Position = UDim2.new(0, 10, 0, 170)
+JoinDiscordButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+JoinDiscordButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinDiscordButton.Font = Enum.Font.SourceSans
+JoinDiscordButton.TextSize = 16
+
+-- "Get Key" button functionality
 GetKeyButton.MouseButton1Click:Connect(function()
-    local keyUrl = "https://link-target.net/1236271/star-x-key-system1"  -- Ganti dengan URL key yang sebenarnya
+    local keyUrl = KeyGuardLibrary.getLink()  -- Use KeyGuard library link function
     if setclipboard then
         setclipboard(keyUrl)
-        -- Menampilkan notifikasi bahwa URL telah disalin
-        local copiedLabel = Instance.new("TextLabel")
-        copiedLabel.Parent = ScreenGui
-        copiedLabel.Text = "The URL Is Already In Clipboard!"
-        copiedLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-        copiedLabel.BackgroundTransparency = 0.5
-        copiedLabel.Size = UDim2.new(0, 250, 0, 50)
-        copiedLabel.Position = UDim2.new(0.5, -125, 0.8, 0)
-        copiedLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-        copiedLabel.Font = Enum.Font.SourceSans
-        copiedLabel.TextSize = 16
-
-        -- Menghilangkan notifikasi setelah 3 detik
-        wait(3)
-        copiedLabel:Destroy()
+        -- Show a notification using SetCore
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Clipboard",
+            Text = "URL Has Copied To Your Clipboard",
+            Icon = ""
+        })
     else
         warn("Clipboard API Not Supported!")
     end
 end)
 
--- Fungsi verifikasi key
+-- Key verification functionality
 VerifyButton.MouseButton1Click:Connect(function()
     local inputKey = KeyInput.Text
-    -- Cek apakah key benar (ubah "KeyBenar123" dengan key yang sesuai)
-    if inputKey == "6BfkTwBXU1Tssbpa" then
-        -- Hapus GUI dan jalankan script setelah key benar
+    local response = KeyGuardLibrary.validateDefaultKey(inputKey) -- Verify key using KeyGuard
+    if response == trueData then
+        -- Key is valid: remove GUI and load the main script
         ScreenGui:Destroy()
-
-        
         loadstring(game:HttpGet("https://raw.githubusercontent.com/StarX-exploit/executed/refs/heads/main/exe.lua"))()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/CodeE4X/miaw/refs/heads/main/miaw.lua"))()
     else
-        -- Jika salah, beri pesan error
+        -- Key is invalid: show error message
         KeyInput.Text = ""
-        KeyInput.PlaceholderText = "Key Wrong, Maybe key changed or Sometng"
+        KeyInput.PlaceholderText = "Key Guardian Fixed, Try Get Key Again Buddy, HEHEHA"
     end
 end)
+
+-- "Join Discord" button functionality
+JoinDiscordButton.MouseButton1Click:Connect(function()
+    local discordUrl = "https://discord.gg/EwARkGncq4" -- Ganti dengan link Discord Anda
+    if setclipboard then
+        setclipboard(discordUrl)
+        -- Show a notification using SetCore
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Clipboard",
+            Text = "Discord link has been copied to your clipboard",
+            Icon = ""
+        })
+    else
+        warn("Clipboard API Not Supported!")
+    end
+end)$dr[_=_[_=$#]]
